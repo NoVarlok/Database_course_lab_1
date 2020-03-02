@@ -1,17 +1,26 @@
 import os
+import os.path
+from tkinter import messagebox as mb
+
 
 class Card:
     possible_types = set(["Creature", "Artifact", "Artifact Creature", "Planeswalker", "Land", "Sorcery", "Instant",
                          "Enchantment", "Token", "Emblem"])
     possible_rarity = set(["Common", "Uncommon", "Rare", "Mythic"])
+    possible_foil = set(['Yes', 'No'])
+    types_string = "Creature, Artifact, Artifact Creature, Planeswalker, Land, Sorcery, Instant, Enchantment, Token, Emblem"
+    rarity_string = "Common, Uncommon, Rare, Mythic"
+    foil_string = "Yes, No"
+    first_string = '{:<3.3}|{:<30.30}|{:<20.20}|{:<3.3}|{:<10.10}|{:<17.17}|{:<20.20}|{:<8.8}|{:<5.5}|{:<5.5}\n'.format(
+            'id', 'Name', 'Set', '№', 'Language', 'Type', 'Artist', 'Rarity', 'Foil', 'Price '+'$')
 
     def check_name(self):
         if not self.name.isalpha():
             raise Exception("Wrong NAME format")
 
     def check_serial_number(self):
-        if not isinstance(self.serialnumber, int):
-            raise Exception("Wrong SERIAL NUMBER format")
+        if not self.serial_number.isnumeric():
+            raise Exception("Wrong SERIAL NUMBER format (int)")
 
     def check_set(self):
         if not self.set.isalpha():
@@ -19,7 +28,7 @@ class Card:
 
     def check_type(self):
         if self.type not in Card.possible_types:
-            raise Exception("Wrong TYPE format")
+            raise Exception("Wrong TYPE format.\nPossible TYPES:\n" + self.types_string)
 
     def check_artist(self):
         if not self.artist.replace(" ", "").isalpha():
@@ -31,15 +40,15 @@ class Card:
 
     def check_rarity(self):
         if self.rarity not in Card.possible_rarity:
-            raise Exception("Wrong RARITY format")
+            raise Exception("Wrong RARITY format.\nPossible RARITY:\n" + self.rarity_string)
 
     def check_foil(self):
-        if not isinstance(self.foil, bool):
-            raise Exception("Wrong FOIL format")
+        if self.foil not in self.possible_foil:
+            raise Exception("Wrong FOIL format.\nPossible RARITY:\n" + self.foil_string)
 
-    def check_prince(self):
-        if not isinstance(self.price, float):
-            raise Exception("Wrong PRICE format")
+    def check_price(self):
+        if not self.price.replace('.', '').isnumeric():
+            raise Exception("Wrong PRICE format (float)")
 
     def __init__(self, _name, _serial_number, _set, _language, _type, _artist, _rarity, _foil, _price):
         self.name = _name # key field
@@ -60,19 +69,19 @@ class Card:
         # self.check_language()
         self.check_rarity()
         self.check_foil()
-        # self.check_prince()
+        # self.check_price()
         # except Exception as exep:
         #    print(exep.args[0])
 
     def get_string(self):
-        string = '{:<30.30}|{:<20.20}|{:<3.3}|{:<10.10}|{:<17.17}|{:<20.20},|{:<8.8}|{:<5.5}|{:<5.5}\n'.format(
-            self.name, self.set, self.serial_number, self.language, self.type, self.artist, self.rarity,
-            self.foil, str(self.price)+'$') # len == 126
+        string = '{:<3.3}|{:<30.30}|{:<20.20}|{:<3.3}|{:<10.10}|{:<17.17}|{:<20.20}|{:<8.8}|{:<5.5}|{:<5.5}\n'.format(
+            str(self.id), self.name, self.set, str(self.serial_number), self.language, self.type, self.artist, self.rarity,
+            self.foil, str(self.price)+'$') # len == 130
         return string
 
 
 class Query:
-    def __init__(self, _name, _serial_number, _set, _language, _type, _artist, _rarity, _foil, _price):
+    def __init__(self, _name='', _serial_number='', _set='', _language='', _type='', _artist='', _rarity='', _foil='', _price=''):
         self.name = _name
         if _serial_number == '':
             self.serial_number = _serial_number
@@ -97,10 +106,16 @@ class DataBase:
         filename = filename.strip()
         self._filename = filename + '.txt'
         self._backup_filename = filename + '.backup'
+        self._csv_filename = filename + 'csv'
         self._size = 0
-        self._line_len = 126 + 2
-        self._backup_stream = None
-        self._save_stream = None
+        self._line_len = 130 + 2
+        if not os.path.exists(self._filename):
+            open(self._filename, 'w').close()
+        self._backup_stream = open(self._filename, 'r+')
+        if not os.path.exists(self._backup_filename):
+            open(self._backup_filename, 'w').close()
+        self._save_stream = open(self._filename, 'r+')
+        self._backup_stream = open(self._backup_filename, 'r+')
         if option == 'load':
             self.load()
         elif option == 'backup':
@@ -122,9 +137,13 @@ class DataBase:
     def create(self):
         pass
 
+    def close(self):
+        self._backup_stream.close()
+        self._save_stream.close()
+
     def save(self):
         self._backup_stream.seek(0)
-        self._save_stream.seek.close()
+        self._save_stream.seek(0)
         self._save_stream = open(self._filename, 'w')
         for line in self._backup_stream:
             line = line.strip()
@@ -138,8 +157,9 @@ class DataBase:
 
     def add_record(self, card: Card):
         if (card.name, card.set, card.language) in self._database:
-            pass # запись уже существует
+            mb.showerror("Ошибка", "Запись с такими ключевыми словами уже существует") # запись уже существует
         else:
+            card.id = self._size
             # card = Card(query.name, query.serial_number, query.set, query.language, query.type, query.artist,
             #             query.rarity, query.foil, query.price)
             self._database[(card.name, card.set, card.language)] = (card, self._size)
@@ -152,9 +172,9 @@ class DataBase:
 
     def fast_search(self, query: Query):
         if self._database.get((query.name, query.set, query.language), 0) == 0:
-            return "Not found!"
+            return []
         else:
-            return [self._database[(query.name, query.set, query.language)]]
+            return [self._database[(query.name, query.set, query.language)][0]]
 
     def advanced_search(self, query: Query):
         result = []
@@ -196,6 +216,7 @@ class DataBase:
                 self._backup_stream.seek(record_id * self._line_len)
                 self._backup_stream.write(card.get_string())
                 # changing database
+                card.id = record_id
                 self._database.pop((card.name, card.set, card.language))
                 self._positions.pop(card_id)
                 self._database[(card.name, card.set, card.language)] = (card, record_id)
