@@ -14,6 +14,15 @@ def show(cards):
         text.insert(END, card.get_string())
 
 
+def show_all():
+    global  database
+    if database is None:
+        mb.showerror("Ошибка", "Ни одна база данных не загруженна")
+        return
+    query = Query()
+    show(database.advanced_search(query))
+
+
 def create():
     global database
     if database is not None:
@@ -89,10 +98,11 @@ def add_record():
             card = Card(_name=name.get(), _set=set.get(), _serial_number=serial_number.get(), _language=language.get(),
                         _type=type.get(), _artist=artist.get(), _rarity=rarity.get(), _foil=foil.get(),
                         _price=price.get())
+            database.add_record(card)
+            show_all()
         except Exception as exep:
             mb.showerror("Ошибка", exep.args[0])
-            return
-        database.add_record(card)
+
 
     window = Toplevel()
     window.resizable(False, False)
@@ -178,6 +188,7 @@ def advanced_search():
 
     if database is None:
         mb.showerror("Ошибка", "Ни одна база данных не загруженна")
+        return
 
     def fill():
         try:
@@ -233,15 +244,169 @@ def advanced_search():
 
 
 def fast_delete():
-    pass
+    global database
+
+    if database is None:
+        mb.showerror("Ошибка", "Ни одна база данных не загруженна")
+        return
+
+    def fill():
+        try:
+            query = Query(_name=name.get(), _set=set.get(), _language=language.get(), )
+            database.fast_delete(query)
+            show_all()
+        except Exception as exep:
+            mb.showerror("Ошибка", exep.args[0])
+            return
+
+    window = Toplevel()
+    window.resizable(False, False)
+    Label(window, text='Введите ключевые поля').pack(side=TOP)
+    l2 = Frame(window)
+    name = Entry(l2, width=35, text='Name')
+    name.delete(0, END)
+    name.insert(0, 'Name')
+    name.pack(side=LEFT)
+    set = Entry(l2, width=25, text='Set')
+    set.delete(0, END)
+    set.insert(0, 'Set')
+    set.pack(side=LEFT)
+    language = Entry(l2, width=15, text='Language')
+    language.delete(0, END)
+    language.insert(0, 'Language')
+    language.pack(side=LEFT)
+    l2.pack()
+    button = Button(window, text='Удалить', command=fill).pack()
 
 
 def advanced_delete():
-    pass
+    global database
+
+    if database is None:
+        mb.showerror("Ошибка", "Ни одна база данных не загруженна")
+        return
+
+    def fill():
+        try:
+            query = Query(_name=name.get(), _serial_number=serial_number.get(), _set=set.get(),
+                          _language=language.get(),
+                          _type=type.get(), _artist=artist.get(), _rarity=rarity.get(), _foil=foil.get(),
+                          _price=price.get())
+            database.advanced_delete(query)
+            show_all()
+        except Exception as exep:
+            mb.showerror("Ошибка", exep.args[0])
+            return
+
+    window = Toplevel()
+    window.resizable(False, False)
+    Label(window, text='Введите карту для удаления карту').pack(side=TOP)
+    l2 = Frame(window)
+    name = Entry(l2, width=35, text='Name')
+    name.delete(0, END)
+    name.insert(0, 'Name')
+    name.pack(side=LEFT)
+    set = Entry(l2, width=25, text='Set')
+    set.delete(0, END)
+    set.insert(0, 'Set')
+    set.pack(side=LEFT)
+    serial_number = Entry(l2, width=8, text='№')
+    serial_number.delete(0, END)
+    serial_number.insert(0, '№ int')
+    serial_number.pack(side=LEFT)
+    language = Entry(l2, width=15, text='Language')
+    language.delete(0, END)
+    language.insert(0, 'Language')
+    language.pack(side=LEFT)
+    type = Entry(l2, width=21, text='Type')
+    type.delete(0, END)
+    type.insert(0, 'Type')
+    type.pack(side=LEFT)
+    artist = Entry(l2, width=25, text='Artist')
+    artist.delete(0, END)
+    artist.insert(0, 'Artist')
+    artist.pack(side=LEFT)
+    rarity = Entry(l2, width=13, text='Rarity')
+    rarity.delete(0, END)
+    rarity.insert(0, 'Rarity')
+    rarity.pack(side=LEFT)
+    foil = Entry(l2, width=15, text='Foil')
+    foil.delete(0, END)
+    foil.insert(0, 'Foil True/False')
+    foil.pack(side=LEFT)
+    price = Entry(l2, width=10, text='Price')
+    price.delete(0, END)
+    price.insert(0, 'Price float')
+    price.pack(side=LEFT)
+    l2.pack()
+    button = Button(window, text='Удалить', command=fill).pack()
 
 
 def edit_record():
-    pass
+    global database
+
+    if database is None:
+        mb.showerror("Ошибка", "Ни одна база данных не загруженна")
+        return
+
+    def fill():
+        old_query = Query(_name=name.get(), _set=set.get(), _language=language.get())
+        if database._database.get((old_query.name, old_query.set, old_query.language), 0) == 0:
+            mb.showwarning(title='Предупреждение', message='В Базе Данных нет записи с такими ключевыми полями!')
+        else:
+            try:
+                new_card = Card(_name=old_query.name, _set=old_query.set, _language=old_query.language,
+                            _serial_number=serial_number.get(), _type=type.get(), _artist=artist.get(),
+                            _rarity=rarity.get(), _foil=foil.get(), _price=price.get())
+                database.edit_record(old_query, new_card)
+                show_all()
+            except Exception as exep:
+                mb.showerror("Ошибка", exep.args[0])
+
+    window = Toplevel()
+    window.resizable(False, False)
+    Label(window, text='Введите ключевые поля').pack(side=TOP)
+    l1 = Frame(window)
+    name = Entry(l1, width=35, text='Name')
+    name.delete(0, END)
+    name.insert(0, 'Name')
+    name.pack(side=LEFT)
+    set = Entry(l1, width=25, text='Set')
+    set.delete(0, END)
+    set.insert(0, 'Set')
+    set.pack(side=LEFT)
+    language = Entry(l1, width=15, text='Language')
+    language.delete(0, END)
+    language.insert(0, 'Language')
+    language.pack(side=LEFT)
+    l1.pack()
+    l2 = Frame(window)
+    serial_number = Entry(l2, width=8, text='№')
+    serial_number.delete(0, END)
+    serial_number.insert(0, '№ int')
+    serial_number.pack(side=LEFT)
+    type = Entry(l2, width=21, text='Type')
+    type.delete(0, END)
+    type.insert(0, 'Type')
+    type.pack(side=LEFT)
+    artist = Entry(l2, width=25, text='Artist')
+    artist.delete(0, END)
+    artist.insert(0, 'Artist')
+    artist.pack(side=LEFT)
+    rarity = Entry(l2, width=13, text='Rarity')
+    rarity.delete(0, END)
+    rarity.insert(0, 'Rarity')
+    rarity.pack(side=LEFT)
+    foil = Entry(l2, width=15, text='Foil')
+    foil.delete(0, END)
+    foil.insert(0, 'Foil True/False')
+    foil.pack(side=LEFT)
+    price = Entry(l2, width=10, text='Price')
+    price.delete(0, END)
+    price.insert(0, 'Price float')
+    price.pack(side=LEFT)
+    l2.pack()
+    button = Button(window, text='Найти', command=fill).pack()
 
 
 root = Tk()
@@ -259,6 +424,7 @@ file_menu.add_command(label='Загрузить backup', command=load_backup)
 file_menu.add_command(label='Импорт в csv', command=import_csv)
 
 options_menu = Menu(main_menu, tearoff=0)
+options_menu.add_command(label='Отобразить Базу Данных', command=show_all)
 options_menu.add_command(label='Добавить запись', command=add_record)
 options_menu.add_command(label='Быстрый поиск', command=fast_search)
 options_menu.add_command(label='Расширенный поиск', command=advanced_search)

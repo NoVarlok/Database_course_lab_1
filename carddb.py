@@ -209,14 +209,15 @@ class DataBase:
             self._backup_stream.seek(self._size * self._line_len)
             self._backup_stream.write(" " * (self._line_len - 2) + '\n')
             if record_id != self._size:
+                key = self._positions[self._size]
                 card, card_id = self._database[key]
+                card.id = record_id
                 # rewriting file
                 self._backup_stream.seek(card_id * self._line_len)
                 self._backup_stream.write(" " * (self._line_len - 2) + '\n')
                 self._backup_stream.seek(record_id * self._line_len)
                 self._backup_stream.write(card.get_string())
                 # changing database
-                card.id = record_id
                 self._database.pop((card.name, card.set, card.language))
                 self._positions.pop(card_id)
                 self._database[(card.name, card.set, card.language)] = (card, record_id)
@@ -225,7 +226,7 @@ class DataBase:
 
     def fast_delete(self, query: Query):
         if self._database.get((query.name, query.set, query.language), 0) != 0:
-            self.delete_records(self._database[(query.name, query.set, query.language)][1])
+            self.delete_records([self._database[(query.name, query.set, query.language)][1]])
 
     def advanced_delete(self, query: Query):
         result = []
@@ -251,9 +252,12 @@ class DataBase:
             result.append(id)
         self.delete_records(result)
 
-    def edit_record(self, old_card: Card, new_car: Card):
-        if self._database.get((old_card.name, old_card.set, old_card.language), 0) != 0:
+    def edit_record(self, old_query: Query, new_card: Card):
+        if self._database.get((old_query.name, old_query.set, old_query.language), 0) != 0:
+            old_card = Card(_name=old_query.name, _set=old_query.set, _language=old_query.language,
+                            _serial_number=new_card.serial_number, _type=new_card.type, _artist=new_card.artist,
+                            _rarity=new_card.rarity, _foil=new_card.foil, _price=new_card.price)
             self.fast_delete(old_card)
-            self.add_record(new_car)
+            self.add_record(new_card)
         else:
             pass
