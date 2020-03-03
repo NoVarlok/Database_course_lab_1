@@ -34,8 +34,6 @@ def create():
         filename = filename.strip()
         if filename[-4:] == '.txt':
             filename = filename[:-4]
-        open(filename + '.txt', 'w').close()
-        open(filename + '.backup', 'w').close()
         database = DataBase(filename, 'create')
 
 
@@ -68,8 +66,6 @@ def load():
         filename = filename.strip()
         if filename[-4:] == '.txt':
             filename = filename[:-4]
-        # open(filename + '.txt', 'w').close()
-        open(filename + '.backup', 'w').close()
         database = DataBase(filename, 'load')
 
 
@@ -84,7 +80,6 @@ def load_backup():
         filename = filename.strip()
         if filename[-7:] == '.backup':
             filename = filename[:-7]
-        open(filename + '.txt', 'w').close()
         database = DataBase(filename, 'backup')
 
 
@@ -388,6 +383,7 @@ def edit_record():
     language.insert(0, 'Language')
     language.pack(side=LEFT)
     l1.pack()
+    Label(window, text='Введите измененные неключевые поля').pack(side=TOP)
     l2 = Frame(window)
     serial_number = Entry(l2, width=8, text='№')
     serial_number.delete(0, END)

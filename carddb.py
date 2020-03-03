@@ -103,19 +103,12 @@ class DataBase:
     def __init__(self, filename: str, option: str):
         self._database = {} # key=(card.name, card.set, card.language) value=(card, id)
         self._positions = {} # key=id, value=(card.name, card.set, card.language)
-        filename = filename.strip()
-        self._filename = filename + '.txt'
-        self._backup_filename = filename + '.backup'
-        self._csv_filename = filename + 'csv'
+        self.filename = filename.strip()
+        self._save_filename = self.filename + '.txt'
+        self._backup_filename = self.filename + '.backup'
+        self._csv_filename = self.filename + '.csv'
         self._size = 0
         self._line_len = 130 + 2
-        if not os.path.exists(self._filename):
-            open(self._filename, 'w').close()
-        self._backup_stream = open(self._filename, 'r+')
-        if not os.path.exists(self._backup_filename):
-            open(self._backup_filename, 'w').close()
-        self._save_stream = open(self._filename, 'r+')
-        self._backup_stream = open(self._backup_filename, 'r+')
         if option == 'load':
             self.load()
         elif option == 'backup':
@@ -126,21 +119,20 @@ class DataBase:
             self.create()
 
     def load_from_backup(self):
-        self._backup_stream.seek(0)
-        self._save_stream.seek(0)
+        open(self._save_filename, 'w').close()
+        self._save_stream = open(self._save_filename, 'rt+')
+        self._backup_stream = open(self._backup_filename, 'rt+')
         for line in self._backup_stream:
             if line != '' and line[0] != ' ':
                 self._save_stream.write(line)
-        self._save_stream.flush()
-        self._save_stream.seek(0)
-        # self._backup_stream.close()
-        # open(self._backup_filename, 'w').close()
-        # self._backup_stream = open(self._backup_filename, 'rt+')
+        # self._save_stream.flush()
+        self._save_stream.close()
+        self._backup_stream.close()
         self.load()
 
-
     def load(self):
-        self._backup_stream.close()
+        self._save_stream = open(self._save_filename, 'rt+')
+        open(self._backup_filename, 'w').close()
         self._backup_stream = open(self._backup_filename, 'rt+')
         for line in self._save_stream:
             if line != '' and line[0]!= '':
@@ -149,30 +141,41 @@ class DataBase:
                 card = Card(_name=name, _set=set, _serial_number=serial_number, _language=language, _type=type,
                             _artist=artist, _rarity=rarity, _foil=foil, _price=price)
                 self.add_record(card)
+        self._save_stream.close()
 
     def import_csv(self):
-        pass
+        with open(self._csv_filename, 'w') as csv_file:
+            print("Name;Set;Serial_number;Language;Type;Artist;Rarity;Foil;Price", file=csv_file)
+            for key in self._database.keys():
+                card = self._database[key][0]
+                print(card.name, card.set, card.serial_number, card.language, card.type, card.artist, card.rarity,
+                      card.foil, card.price, sep=';', file=csv_file)
 
     def create(self):
-        pass
+        open(self._save_filename, 'w').close()
+        open(self._backup_filename, 'w').close()
+        # self._save_stream = open(self._save_filename, 'rt+')
+        self._backup_stream = open(self._backup_filename, 'rt+')
 
     def close(self):
+        # self._save_stream.close()
         self._backup_stream.close()
-        self._save_stream.close()
 
     def save(self):
         self._backup_stream.seek(0)
-        self._save_stream.seek(0)
-        self._save_stream = open(self._filename, 'w')
+        # self._save_stream.close()
+        self._save_stream = open(self._save_filename, 'w')
         for line in self._backup_stream:
             line = line.strip()
             if line == '':
                 break
             self._save_stream.write(line + '\n')
-        self._save_stream.flush()
+        # self._save_stream.flush()
+        self._save_stream.close()
 
     def delete_database(self):
-        pass
+        os.remove(self._save_filename)
+        os.remove(self._backup_filename)
 
     def add_record(self, card: Card):
         if (card.name, card.set, card.language) in self._database:
