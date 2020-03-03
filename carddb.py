@@ -126,10 +126,29 @@ class DataBase:
             self.create()
 
     def load_from_backup(self):
-        pass
+        self._backup_stream.seek(0)
+        self._save_stream.seek(0)
+        for line in self._backup_stream:
+            if line != '' and line[0] != ' ':
+                self._save_stream.write(line)
+        self._save_stream.flush()
+        self._save_stream.seek(0)
+        # self._backup_stream.close()
+        # open(self._backup_filename, 'w').close()
+        # self._backup_stream = open(self._backup_filename, 'rt+')
+        self.load()
+
 
     def load(self):
-        pass
+        self._backup_stream.close()
+        self._backup_stream = open(self._backup_filename, 'rt+')
+        for line in self._save_stream:
+            if line != '' and line[0]!= '':
+                id, name, set, serial_number, language, type, artist, rarity, foil, price = map(str.strip, line.split('|'))
+                price = price.replace('$', '')
+                card = Card(_name=name, _set=set, _serial_number=serial_number, _language=language, _type=type,
+                            _artist=artist, _rarity=rarity, _foil=foil, _price=price)
+                self.add_record(card)
 
     def import_csv(self):
         pass

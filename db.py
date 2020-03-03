@@ -27,7 +27,6 @@ def create():
     global database
     if database is not None:
         database.save()
-        database.save()
     filename = fd.asksaveasfilename(filetypes=(("TXT files", "*.txt"), ("All files", "*.*")),
                                     title='Введите название базы данных',
                                     initialfile='Default.txt')
@@ -66,6 +65,11 @@ def load():
     filename = fd.askopenfilename(filetypes=(("TXT files", "*.txt"), ("All files", "*.*")),
                                     title='Введите название базы данных для загрузки')
     if filename != "":
+        filename = filename.strip()
+        if filename[-4:] == '.txt':
+            filename = filename[:-4]
+        # open(filename + '.txt', 'w').close()
+        open(filename + '.backup', 'w').close()
         database = DataBase(filename, 'load')
 
 
@@ -77,7 +81,11 @@ def load_backup():
     filename = fd.askopenfilename(filetypes=(("BACKUP files", "*.backup"), ("All files", "*.*")),
                                     title='Введите название базы данных')
     if filename != "":
-        database = DataBase(filename, 'load_from_backup')
+        filename = filename.strip()
+        if filename[-7:] == '.backup':
+            filename = filename[:-7]
+        open(filename + '.txt', 'w').close()
+        database = DataBase(filename, 'backup')
 
 
 def import_csv():
