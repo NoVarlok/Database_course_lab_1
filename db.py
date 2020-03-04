@@ -41,7 +41,7 @@ def save():
     global database
     if database is not None:
         database.save()
-        database.close()
+        # database.close()
     else:
         mb.showerror("Ошибка", "Ни одна база данных не загруженна")
 
@@ -141,7 +141,7 @@ def add_record():
     rarity.pack(side=LEFT)
     foil = Entry(l2, width=15, text='Foil')
     foil.delete(0, END)
-    foil.insert(0, 'Foil True/False')
+    foil.insert(0, 'Foil Yes/No')
     foil.pack(side=LEFT)
     price = Entry(l2, width=10, text='Price')
     price.delete(0, END)
@@ -236,7 +236,7 @@ def advanced_search():
     rarity.pack(side=LEFT)
     foil = Entry(l2, width=15, text='Foil')
     foil.delete(0, END)
-    foil.insert(0, 'Foil True/False')
+    foil.insert(0, 'Foil Yes/No')
     foil.pack(side=LEFT)
     price = Entry(l2, width=10, text='Price')
     price.delete(0, END)
@@ -335,7 +335,7 @@ def advanced_delete():
     rarity.pack(side=LEFT)
     foil = Entry(l2, width=15, text='Foil')
     foil.delete(0, END)
-    foil.insert(0, 'Foil True/False')
+    foil.insert(0, 'Foil Yes/No')
     foil.pack(side=LEFT)
     price = Entry(l2, width=10, text='Price')
     price.delete(0, END)
@@ -403,7 +403,7 @@ def edit_record():
     rarity.pack(side=LEFT)
     foil = Entry(l2, width=15, text='Foil')
     foil.delete(0, END)
-    foil.insert(0, 'Foil True/False')
+    foil.insert(0, 'Foil Yes/No')
     foil.pack(side=LEFT)
     price = Entry(l2, width=10, text='Price')
     price.delete(0, END)
@@ -439,7 +439,7 @@ options_menu.add_command(label='Редактировать запись', comman
 main_menu.add_cascade(label='Файл', menu=file_menu)
 main_menu.add_cascade(label='Действия', menu=options_menu)
 
-text = Text(width=140, height=30, wrap=WORD) #state=DISABLED
+text = Text(width=145, height=30, wrap=WORD) #state=DISABLED
 text.pack(side=LEFT)
 scroll = Scrollbar(command=text.yview)
 scroll.pack(side=LEFT, fill=Y)

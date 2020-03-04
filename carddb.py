@@ -11,7 +11,8 @@ class Card:
     types_string = "Creature, Artifact, Artifact Creature, Planeswalker, Land, Sorcery, Instant, Enchantment, Token, Emblem"
     rarity_string = "Common, Uncommon, Rare, Mythic"
     foil_string = "Yes, No"
-    first_string = '{:<3.3}|{:<30.30}|{:<20.20}|{:<3.3}|{:<10.10}|{:<17.17}|{:<20.20}|{:<8.8}|{:<5.5}|{:<5.5}\n'.format(
+    format_string = '{:<7.7}|{:<30.30}|{:<20.20}|{:<5.5}|{:<10.10}|{:<17.17}|{:<20.20}|{:<8.8}|{:<5.5}|{:<8.8}\n'
+    first_string = format_string.format(
             'id', 'Name', 'Set', '№', 'Language', 'Type', 'Artist', 'Rarity', 'Foil', 'Price '+'$')
 
     def check_name(self):
@@ -74,7 +75,7 @@ class Card:
         #    print(exep.args[0])
 
     def get_string(self):
-        string = '{:<3.3}|{:<30.30}|{:<20.20}|{:<3.3}|{:<10.10}|{:<17.17}|{:<20.20}|{:<8.8}|{:<5.5}|{:<5.5}\n'.format(
+        string = self.format_string.format(
             str(self.id), self.name, self.set, str(self.serial_number), self.language, self.type, self.artist, self.rarity,
             self.foil, str(self.price)+'$') # len == 130
         return string
@@ -108,7 +109,8 @@ class DataBase:
         self._backup_filename = self.filename + '.backup'
         self._csv_filename = self.filename + '.csv'
         self._size = 0
-        self._line_len = 130 + 2
+        # self._line_len = 130 + 2
+        self._line_len = len(Card.first_string) + 1
         if option == 'load':
             self.load()
         elif option == 'backup':
