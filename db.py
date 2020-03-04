@@ -2,6 +2,7 @@ from tkinter import *
 from carddb import *
 from tkinter import filedialog as fd
 from tkinter import messagebox as mb
+import time
 import os
 
 database = None
@@ -412,6 +413,60 @@ def edit_record():
     l2.pack()
     button = Button(window, text='Найти', command=fill).pack()
 
+def performance_check():
+    global database
+
+    if database is None:
+        mb.showerror("Ошибка", "Ни одна база данных не загруженна")
+        return
+    repeat = 10000000
+    records = []
+    add_record_time = 0
+    name = 'name'
+    set = 0
+    serial_number = '1'
+    type = 'Creature'
+    artist = 'artist'
+    language = 'language'
+    rarity = 'Common'
+    foil = 'No'
+    price = '300.0'
+    for i in range(repeat):
+        set = str(i)
+        card = Card(_name=name, _set=set, _serial_number=serial_number, _type=type, _artist=artist, _language=language,
+                    _rarity=rarity, _foil=foil, _price=price)
+        start_time = time.time()
+        database.add_record(card)
+        finish_time = time.time()
+        add_record_time += finish_time - start_time
+        records.append(0)
+    fast_search_time = 0
+    card_key = database._positions[0]
+    card = database._database[card_key][0]
+    query = Query(_name=card.name, _set=card.set, _language=card.language)
+    for i in range(repeat):
+        start_time = time.time()
+        database.fast_search(query)
+        finish_time = time.time()
+        fast_search_time += finish_time - start_time
+    # advanced_search_time = 0
+    # query = Query()
+    # for i in range(repeat):
+    #     start_time = time.time()
+    #     database.advanced_search(query)
+    #     finish_time = time.time()
+    #     advanced_search_time += finish_time - start_time
+    fast_delete_time = 0
+    start_time = time.time()
+    database.delete_records(records)
+    finish_time = time.time()
+    fast_delete_time = finish_time - start_time
+    print("{0} - repeated {1} times - time: {2}".format('Add_record', str(repeat), add_record_time))
+    print("{0} - repeated {1} times - time: {2}".format('Fast_delete', str(repeat), fast_delete_time))
+    print("{0} - repeated {1} times - time: {2}".format('Fast_search_time', str(repeat), fast_search_time))
+    advanced_search_time = None
+    print("{0} - repeated {1} times - time: {2}".format('Advanced_search_time', str(repeat), advanced_search_time))
+
 
 root = Tk()
 root.title('DataBase')
@@ -436,8 +491,13 @@ options_menu.add_command(label='Быстрое удаление', command=fast_d
 options_menu.add_command(label='Расширенное удаление', command=advanced_delete)
 options_menu.add_command(label='Редактировать запись', command=edit_record)
 
+performance_menu = Menu(main_menu, tearoff=0)
+performance_menu.add_command(label='Проверка производительности', command=performance_check)
+# performance_menu.add_command(label='Удаление записи', command=)
+
 main_menu.add_cascade(label='Файл', menu=file_menu)
 main_menu.add_cascade(label='Действия', menu=options_menu)
+main_menu.add_cascade(label='Производительность', menu=performance_menu)
 
 text = Text(width=145, height=30, wrap=WORD) #state=DISABLED
 text.pack(side=LEFT)
