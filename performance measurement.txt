@@ -1,0 +1,37 @@
+Add_record - repeated 1 times - time: 0.0
+Fast_delete - repeated 1 times - time: 0.0
+Fast_search_time - repeated 1 times - time: 0.0
+Advanced_search_time - repeated 1 times - time: 0.0
+
+Add_record - repeated 10 times - time: 0.0050334930419921875
+Fast_delete - repeated 10 times - time: 0.0
+Fast_search_time - repeated 10 times - time: 0.0
+Advanced_search_time - repeated 10 times - time: 0.0
+
+Add_record - repeated 100 times - time: 0.00913095474243164
+Fast_delete - repeated 100 times - time: 0.00504612922668457
+Fast_search_time - repeated 100 times - time: 0.0
+Advanced_search_time - repeated 100 times - time: 0.009930133819580078
+
+Add_record - repeated 1000 times - time: 0.029003620147705078
+Fast_delete - repeated 1000 times - time: 0.03123927116394043
+Fast_search_time - repeated 1000 times - time: 0.0009553432464599609
+Advanced_search_time - repeated 1000 times - time: 0.41072750091552734
+
+Add_record - repeated 10000 times - time: 0.20600056648254395
+Fast_delete - repeated 10000 times - time: 0.37485551834106445
+Fast_search_time - repeated 10000 times - time: 0.007775068283081055
+Advanced_search_time - repeated 10000 times - time: 48.75977444648743
+
+Add_record - repeated 100000 times - time: 2.188127040863037
+Fast_delete - repeated 100000 times - time: 4.046782493591309
+Fast_search_time - repeated 100000 times - time: 0.06253170967102051
+Advanced_search_time - repeated 100000 times - time: None
+
+Add_record - repeated 1000000 times - time: 22.305910348892212
+Fast_delete - repeated 1000000 times - time: 39.52196216583252
+Fast_search_time - repeated 1000000 times - time: 0.6770586967468262
+Advanced_search_time - repeated 1000000 times - time: None
+
+
+
