@@ -48,7 +48,7 @@ class Card:
             raise Exception("Wrong FOIL format.\nPossible RARITY:\n" + self.foil_string)
 
     def check_price(self):
-        if not self.price.replace('.', '').isnumeric():
+        if not self.price.replace('.', '', 1).isnumeric():
             raise Exception("Wrong PRICE format (float)")
 
     def __init__(self, _name, _serial_number, _set, _language, _type, _artist, _rarity, _foil, _price):
@@ -176,6 +176,7 @@ class DataBase:
         self._save_stream.close()
 
     def delete_database(self):
+        self.close()
         os.remove(self._save_filename)
         os.remove(self._backup_filename)
 

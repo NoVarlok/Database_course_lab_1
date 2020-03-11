@@ -13,10 +13,25 @@ Fast_delete - repeated 100 times - time: 0.00504612922668457
 Fast_search_time - repeated 100 times - time: 0.0
 Advanced_search_time - repeated 100 times - time: 0.009930133819580078
 
+Add_record - repeated 500 times - time: 0.011043071746826172
+Fast_delete - repeated 500 times - time: 0.018999814987182617
+Fast_search_time - repeated 500 times - time: 0.0009996891021728516
+Advanced_search_time - repeated 500 times - time: 0.11195707321166992
+
 Add_record - repeated 1000 times - time: 0.029003620147705078
 Fast_delete - repeated 1000 times - time: 0.03123927116394043
 Fast_search_time - repeated 1000 times - time: 0.0009553432464599609
 Advanced_search_time - repeated 1000 times - time: 0.41072750091552734
+
+Add_record - repeated 5000 times - time: 0.11611390113830566
+Fast_delete - repeated 5000 times - time: 0.18799996376037598
+Fast_search_time - repeated 5000 times - time: 0.002002239227294922
+Advanced_search_time - repeated 5000 times - time: 11.288959503173828
+
+Add_record - repeated 7500 times - time: 0.16599011421203613
+Fast_delete - repeated 7500 times - time: 0.27899885177612305
+Fast_search_time - repeated 7500 times - time: 0.005998373031616211
+Advanced_search_time - repeated 7500 times - time: 24.438045263290405
 
 Add_record - repeated 10000 times - time: 0.20600056648254395
 Fast_delete - repeated 10000 times - time: 0.37485551834106445
