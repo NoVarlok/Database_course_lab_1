@@ -226,6 +226,7 @@ class DataBase:
         return result
 
     def delete_records(self, array): # get array of records ids to delete
+        array.sort(reverse=True)
         for record_id in array:
             self._size -= 1
             key = self._positions[record_id]
